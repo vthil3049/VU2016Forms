@@ -38,32 +38,30 @@ function item_type_changed()
   var prefix = performance + current_grade + current_type;
   document.getElementById("prefix").value = prefix;
   
+  var numParticipants = 0;
+  
+  if ((performance == 'A' ) || (current_type == 'CVS') || (current_type == 'CIS') || (current_type == 'HVS') || (current_type == 'LVS') || (current_type == 'BS') || (current_type == 'FS') || (current_type == 'CS'))
+  {
+     numParticipants = 1;
+  }
+  else
+  {
+      numParticipants = 2;   
+  }
+  document.getElementById('num_participants').value = numParticipants.toString();
+  num_part_changed();
+  //If solo is selected then don't allow participant count to change
+  if (numParticipants == 1)
+  {
+    document.getElementById('num_participants').disabled = true;
+  }
+  else
+  {
+    document.getElementById('num_participants').disabled = false;    
+  }
+  	  
 }
 
-function validate_contacts()
-{
-	if (document.getElementById('alt_first_name').value.toUpperCase() == document.getElementById('contact_first_name').value.toUpperCase()  )
-	{
-		alert("contact information cannot be identical");
-		document.getElementById('alt_first_name').value = "";
-	}
-	else if (document.getElementById('alt_last_name').value.toUpperCase() == document.getElementById('contact_last_name').value.toUpperCase()  )
-	{
-		alert("contact information cannot be identical");
-		document.getElementById('alt_last_name').value = "";
-	}
-	else if (document.getElementById('alt_email').value.toUpperCase() == document.getElementById('contact_email').value.toUpperCase()  )
-	{
-		alert("contact information cannot be identical");
-		document.getElementById('alt_email').value = "";
-	}
-	else if (document.getElementById('alt_phone').value.toUpperCase() == document.getElementById('contact_phone').value.toUpperCase()  )
-	{
-		alert("contact information cannot be identical");
-		document.getElementById('alt_phone').value = "";	
-	}
-
-}
 function displayCategory()
 {
   //If art is selected then disable Adults and Subjuniors
@@ -157,7 +155,7 @@ function displayItemTypes()
     }
     else
     {
-      addOption(item_box, "Individual artwork", "RT");   
+      addOption(item_box, "Individual artwork", "A");   
     }
   
 }
@@ -170,39 +168,13 @@ function addOption(selectbox,text,value )
 	selectbox.options.add(optn);
 }
 
-function displayField()
-{
-	/* if category is music then display music subset only and hide details text box */
-	if (document.getElementsByName('form[performance_category]')[0].checked) 
-	{
-	document.getElementsByClassName('rsform-block-music-type')[0].style.display="";
-	document.getElementsByClassName('rsform-block-dance-type')[0].style.display="none";
-	document.getElementsByClassName('rsform-block-other-type')[0].style.display="none";
-	//document.getElementsByClassName('rsform-block-performance-other-detail')[0].style.display="none";
-	}
- /* category is dance */
-	else if (document.getElementsByName('form[performance_category]')[1].checked)
-	{
-	document.getElementsByClassName('rsform-block-music-type')[0].style.display="none";
-	document.getElementsByClassName('rsform-block-dance-type')[0].style.display="";
-	document.getElementsByClassName('rsform-block-other-type')[0].style.display="none";
-	//document.getElementsByClassName('rsform-block-performance-other-detail')[0].style.display="none";
-	}
-	/* category is other */
-	else
-	{
-		document.getElementsByClassName('rsform-block-music-type')[0].style.display="none";
-		document.getElementsByClassName('rsform-block-dance-type')[0].style.display="none";
-		document.getElementsByClassName('rsform-block-other-type')[0].style.display="";		
-	//	document.getElementsByClassName('rsform-block-performance-other-detail')[0].style.display="";
-	}
-}
 
 function num_part_changed()
 {
 	var max_parts = 14;  /* maximum number of participants */
 	var num_parts = parseInt(document.getElementById('num_participants').value);
-	
+	//Get the current selection for grade group
+  
 	for (var i= 1; i <= max_parts ; i++ )
 	{
 		var element_id = i.toString();
@@ -211,6 +183,11 @@ function num_part_changed()
 		var grade = "rsform-block-part-"+element_id+"-grade";
 		var first_name_text = document.getElementById("part_"+element_id+"_first_name");
 		var last_name_text = document.getElementById("part_"+element_id+"_last_name");
+    var grade_box = document.getElementById("part_"+element_id+"_grade");
+    //first clear all the items
+    grade_box.options.length = 0;
+    addOption(grade_box, "Please select one", "0");   
+    
 		if (i <= num_parts)
 		{
 			first_name_text.setAttribute("required", "");
@@ -219,6 +196,36 @@ function num_part_changed()
 			document.getElementsByClassName(first_name)[0].style.display="";
 			document.getElementsByClassName(last_name)[0].style.display="";
 			document.getElementsByClassName(grade)[0].style.display="";
+
+      if (document.getElementsByName('form[grade_group]')[0].checked)
+      {
+        //Add K - 2
+        addOption(grade_box, "K", "K");
+        addOption(grade_box, "1", "1");  
+        addOption(grade_box, "2", "2");         
+      }
+      else if (document.getElementsByName('form[grade_group]')[1].checked)
+      {
+        //Add 3-7
+        addOption(grade_box, "3", "3");
+        addOption(grade_box, "4", "4");  
+        addOption(grade_box, "5", "5"); 
+        addOption(grade_box, "6", "6");  
+        addOption(grade_box, "7", "7");         
+      }
+      else if (document.getElementsByName('form[grade_group]')[2].checked)
+      {
+        //Add 3-7
+        addOption(grade_box, "8", "8");
+        addOption(grade_box, "9", "9");  
+        addOption(grade_box, "10", "10"); 
+        addOption(grade_box, "11", "11");  
+        addOption(grade_box, "12", "12");         
+      }      
+      else if (document.getElementsByName('form[grade_group]')[3].checked)  
+      {
+        addOption(grade_box, "Adult", "Adult");
+      }
 		}
 		else
 		{
@@ -248,67 +255,7 @@ function music_required_function()
 
 }
 
-function same_contact_function()
-{
-	var teacher_same = false;
-	var elem1 = document.getElementById('contacts_same0');
-	var alt_same = false;
-	var elem2 = document.getElementById('contacts_same1');
-	if (elem1 == null || elem2 == null)
-	{
-		console.log("Some element is null");
-	}
-	else
-	{
-		teacher_same = elem1.checked;
-		alt_same = elem2.checked;
-		console.log("Element was found");
-	}
-	
-	if (teacher_same)
-	{
-		//If teacher is the same as contact - then copy the contents and set it to readonly
-		document.getElementById('teacher_first_name').value = document.getElementById('contact_first_name').value;
-		document.getElementById('teacher_last_name').value = document.getElementById('contact_last_name').value;
-		document.getElementById('teacher_email').value = document.getElementById('contact_email').value;
-		document.getElementById('teacher_phone').value = document.getElementById('contact_phone').value;	
-		
-		document.getElementById('teacher_first_name').readOnly = true;
-		document.getElementById('teacher_last_name').readOnly = true;
-		document.getElementById('teacher_email').readOnly = true;
-		document.getElementById('teacher_phone').readOnly = true;		
-	}
-	else
-	{
-		//Otherwise make sure the fields are editable
-		document.getElementById('teacher_first_name').readOnly = false;
-		document.getElementById('teacher_last_name').readOnly = false;
-		document.getElementById('teacher_email').readOnly = false;
-		document.getElementById('teacher_phone').readOnly = false;	
-	}
-	
-	if (alt_same)
-	{
-		//If teacher is the same as contact - then copy the contents and set it to readonly
-		document.getElementById('alt_first_name').value = document.getElementById('teacher_first_name').value;
-		document.getElementById('alt_last_name').value = document.getElementById('teacher_last_name').value;
-		document.getElementById('alt_email').value = document.getElementById('teacher_email').value;
-		document.getElementById('alt_phone').value = document.getElementById('teacher_phone').value;
-		
-		document.getElementById('alt_first_name').readOnly = true;;
-		document.getElementById('alt_last_name').readOnly = true;
-		document.getElementById('alt_email').readOnly = true;
-		document.getElementById('alt_phone').readOnly = true;	
-	}
-	else
-	{
-		//Otherwise make sure the fields are editable
-		document.getElementById('alt_first_name').readOnly = false;
-		document.getElementById('alt_last_name').readOnly = false;
-		document.getElementById('alt_email').readOnly = false;
-		document.getElementById('alt_phone').readOnly = false;	
-	}
-}	
+
 function enable_disable_submit()
 {
 	if (document.getElementById('signature0').checked)
@@ -322,7 +269,7 @@ function enable_disable_submit()
 }
 window.onload = function() {
    // document.getElementsByName('form[performance_category]')[0].checked=true;
-	displayField();
+	//displayField();
 	num_part_changed();
 	music_required_function();
 	enable_disable_submit();
