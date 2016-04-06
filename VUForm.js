@@ -31,11 +31,11 @@ function item_type_changed()
   }  
   else if (document.getElementsByName('form[grade_group]')[3].checked)
   {
-    current_grade = '4'; //senior   
+    current_grade = '4'; //Adult   
   } 
   
   var current_type = document.getElementById("item_type").value;    
-  var prefix = performance + current_grade + current_type;
+  var prefix = performance + current_grade + current_type+"_";
   document.getElementById("prefix").value = prefix;
   
   var numParticipants = 0;
@@ -43,11 +43,15 @@ function item_type_changed()
   if ((performance == 'A' ) || (current_type == 'CVS') || (current_type == 'CIS') || (current_type == 'HVS') || (current_type == 'LVS') || (current_type == 'BS') || (current_type == 'FS') || (current_type == 'CS'))
   {
      numParticipants = 1;
+
   }
   else
   {
       numParticipants = 2;   
+    
   }
+  updateNumParticipantsDropdown(numParticipants);  //Change the dropdown to show just 1 or 2+
+  
   document.getElementById('num_participants').value = numParticipants.toString();
   num_part_changed();
   //If solo is selected then don't allow participant count to change
@@ -61,6 +65,25 @@ function item_type_changed()
   }
   	  
 }
+function updateNumParticipantsDropdown(numParticipants)
+{
+  var max_parts = 14;  /* maximum number of participants */
+  
+  participant_dropdown = document.getElementById('num_participants');
+  participant_dropdown.options.length = 0;
+  if (numParticipants == 1)
+  {
+    addOption(participant_dropdown, 1, 1);
+  }
+  else
+  {
+    for (var i= 2; i <= max_parts; i++)
+    {
+      addOption(participant_dropdown, i, i);
+    }
+  }
+}
+
 
 function displayCategory()
 {
@@ -190,8 +213,10 @@ function num_part_changed()
     
 		if (i <= num_parts)
 		{
-			first_name_text.setAttribute("required", "");
-			last_name_text.setAttribute("required", "");
+			//first_name_text.setAttribute("required", "");
+			//last_name_text.setAttribute("required", "");
+      first_name_text.required = true;
+      last_name_text.required = true;
 			/* show the field if the participant number is within the range */
 			document.getElementsByClassName(first_name)[0].style.display="";
 			document.getElementsByClassName(last_name)[0].style.display="";
