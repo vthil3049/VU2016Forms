@@ -98,6 +98,11 @@ function displayCategory()
     
     document.getElementsByName('form[grade_group]')[0].disabled = true;
     document.getElementsByName('form[grade_group]')[3].disabled = true;
+    document.getElementById('item_name').disabled = true;
+    document.getElementById('item_name').value="Artwork";    
+    //Disable audio file upload
+    document.getElementsByName('form[music_required]')[1].checked = true;
+    music_required_function();
   }
   else
   {
@@ -106,6 +111,11 @@ function displayCategory()
     document.getElementsByName('form[grade_group]')[1].disabled = false;
     document.getElementsByName('form[grade_group]')[2].disabled = false;
     document.getElementsByName('form[grade_group]')[3].disabled = false;
+    document.getElementById('item_name').disabled = false;   
+    
+    //Enable audio file upload
+    document.getElementsByName('form[music_required]')[0].checked = true;
+    music_required_function();    
   }
   //Item types need to change when category changes
   displayItemTypes();
@@ -176,9 +186,11 @@ function displayItemTypes()
         addOption(item_box, "Folk/Film (Non-Classical) Group", "FG");
       }      
     }
-    else
+    else if (document.getElementsByName('form[performance_category]')[2].checked)
     {
-      addOption(item_box, "Individual artwork", "A");   
+      //For art option select artwork
+      addOption(item_box, "Individual artwork", "A");
+      //item_box.selectedIndex = 1; 
     }
   
 }
