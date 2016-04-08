@@ -33,8 +33,13 @@ function item_type_changed()
   {
     current_grade = '4'; //Adult   
   } 
+  var type_dropdown = document.getElementById("item_type");  
+  var current_type = type_dropdown.value;   
+  //var selectedText = document.getElementById("item_type").text;
+
+  var selectedText = type_dropdown.options[type_dropdown.selectedIndex].text;
+  document.getElementById('item_type_for_output').value = selectedText;
   
-  var current_type = document.getElementById("item_type").value;    
   var prefix = performance + current_grade + current_type+"_";
   document.getElementById("prefix").value = prefix;
   
@@ -85,11 +90,11 @@ function updateNumParticipantsDropdown(numParticipants)
 }
 
 
-function displayCategory()
+function performCategoryChanged()
 {
   //If art is selected then disable Adults and Subjuniors
   if (document.getElementsByName('form[performance_category]')[2].checked) 
-	{
+  {
     //Remove any selections for the grade group
     for (var i= 0; i < 4; i++)
     {
@@ -97,32 +102,50 @@ function displayCategory()
     }
     
     document.getElementsByName('form[grade_group]')[0].disabled = true;
+    document.getElementsByName('form[grade_group]')[1].disabled = false;
+    document.getElementsByName('form[grade_group]')[2].disabled = false;	
     document.getElementsByName('form[grade_group]')[3].disabled = true;
-    document.getElementById('item_name').disabled = true;
-    document.getElementById('item_name').value="Artwork";    
+	document.getElementById('item_name').value="Artwork";  
+    document.getElementById('item_name').readOnly = true;
     //Disable audio file upload
     document.getElementsByName('form[music_required]')[1].checked = true;
     music_required_function();
   }
-  else
+  else if ((document.getElementsByName('form[performance_category]')[0].checked) || 
+     (document.getElementsByName('form[performance_category]')[1].checked))
   {
     //if its music or dance enable all grade groups
     document.getElementsByName('form[grade_group]')[0].disabled = false;
     document.getElementsByName('form[grade_group]')[1].disabled = false;
     document.getElementsByName('form[grade_group]')[2].disabled = false;
     document.getElementsByName('form[grade_group]')[3].disabled = false;
-    document.getElementById('item_name').disabled = false;   
+	document.getElementById('item_name').value="";  
+    document.getElementById('item_name').readOnly = false;
     
     //Enable audio file upload
     document.getElementsByName('form[music_required]')[0].checked = true;
     music_required_function();    
   }
   //Item types need to change when category changes
-  displayItemTypes();
+  //displayItemTypes();
+  gradeGroupChanged();
 }
-function displayItemTypes()
+
+function gradeGroupChanged()
 {
   var item_box = document.getElementById("item_type");
+  
+  if ((document.getElementsByName('form[performance_category]')[0].checked  || 
+    document.getElementsByName('form[performance_category]')[1].checked  ||
+	document.getElementsByName('form[performance_category]')[2].checked ) )
+	{
+		//Initial condition
+		if (item_box.disabled == true)
+		{
+			item_box.disabled = false;
+		}
+	}
+  
   //first clear all the items
   item_box.options.length = 0;
   addOption(item_box, "Please select one", "0");
@@ -147,7 +170,6 @@ function displayItemTypes()
         addOption(item_box, "Carnatic Instrumental Solo", "CIS");        
         addOption(item_box, "Hindustani Vocal Solo", "HVS");
         addOption(item_box, "Hindustani Vocal Group", "HVG"); 
-        addOption(item_box, "Hindustani Instrumental Solo", "HIS");          
         addOption(item_box, "Non-Classical (Light) Vocal Solo", "LVS");       
         addOption(item_box, "Non-Classical (Light) Vocal Group", "LVG");
         addOption(item_box, "Non-Classical (Light) Instrumental Solo", "LIS");          
@@ -164,8 +186,8 @@ function displayItemTypes()
       {
         //dance for sub juniors
         addOption(item_box, "Bharathanatyam Group", "BG");
+        addOption(item_box, "Classical (Other) Group ", "CG");         
         addOption(item_box, "Folk/Film (Non-Classical) Group", "FG");
-        addOption(item_box, "Non-Classical (Light) Vocal Group", "LVG");        
       }
       //juniors and seniors music
       else if ((document.getElementsByName('form[grade_group]')[1].checked) ||
@@ -209,7 +231,7 @@ function num_part_changed()
 	var max_parts = 14;  /* maximum number of participants */
 	var num_parts = parseInt(document.getElementById('num_participants').value);
 	//Get the current selection for grade group
-  
+
 	for (var i= 1; i <= max_parts ; i++ )
 	{
 		var element_id = i.toString();
@@ -218,51 +240,51 @@ function num_part_changed()
 		var grade = "rsform-block-part-"+element_id+"-grade";
 		var first_name_text = document.getElementById("part_"+element_id+"_first_name");
 		var last_name_text = document.getElementById("part_"+element_id+"_last_name");
-    var grade_box = document.getElementById("part_"+element_id+"_grade");
-    //first clear all the items
-    grade_box.options.length = 0;
-    addOption(grade_box, "Please select one", "0");   
-    
+		var grade_box = document.getElementById("part_"+element_id+"_grade");
+		//first clear all the items
+		grade_box.options.length = 0;
+		addOption(grade_box, "Please select one", "0");   
+
 		if (i <= num_parts)
 		{
 			//first_name_text.setAttribute("required", "");
 			//last_name_text.setAttribute("required", "");
-      first_name_text.required = true;
-      last_name_text.required = true;
+			  first_name_text.required = true;
+			  last_name_text.required = true;
 			/* show the field if the participant number is within the range */
 			document.getElementsByClassName(first_name)[0].style.display="";
 			document.getElementsByClassName(last_name)[0].style.display="";
 			document.getElementsByClassName(grade)[0].style.display="";
 
-      if (document.getElementsByName('form[grade_group]')[0].checked)
-      {
-        //Add K - 2
-        addOption(grade_box, "K", "K");
-        addOption(grade_box, "1", "1");  
-        addOption(grade_box, "2", "2");         
-      }
-      else if (document.getElementsByName('form[grade_group]')[1].checked)
-      {
-        //Add 3-7
-        addOption(grade_box, "3", "3");
-        addOption(grade_box, "4", "4");  
-        addOption(grade_box, "5", "5"); 
-        addOption(grade_box, "6", "6");  
-        addOption(grade_box, "7", "7");         
-      }
-      else if (document.getElementsByName('form[grade_group]')[2].checked)
-      {
-        //Add 3-7
-        addOption(grade_box, "8", "8");
-        addOption(grade_box, "9", "9");  
-        addOption(grade_box, "10", "10"); 
-        addOption(grade_box, "11", "11");  
-        addOption(grade_box, "12", "12");         
-      }      
-      else if (document.getElementsByName('form[grade_group]')[3].checked)  
-      {
-        addOption(grade_box, "Adult", "Adult");
-      }
+		  if (document.getElementsByName('form[grade_group]')[0].checked)
+		  {
+			//Add K - 2
+			addOption(grade_box, "K", "K");
+			addOption(grade_box, "1", "1");  
+			addOption(grade_box, "2", "2");         
+		  }
+		  else if (document.getElementsByName('form[grade_group]')[1].checked)
+		  {
+			//Add 3-7
+			addOption(grade_box, "3", "3");
+			addOption(grade_box, "4", "4");  
+			addOption(grade_box, "5", "5"); 
+			addOption(grade_box, "6", "6");  
+			addOption(grade_box, "7", "7");         
+		  }
+		  else if (document.getElementsByName('form[grade_group]')[2].checked)
+		  {
+			//Add 3-7
+			addOption(grade_box, "8", "8");
+			addOption(grade_box, "9", "9");  
+			addOption(grade_box, "10", "10"); 
+			addOption(grade_box, "11", "11");  
+			addOption(grade_box, "12", "12");         
+		  }      
+		  else if (document.getElementsByName('form[grade_group]')[3].checked)  
+		  {
+			addOption(grade_box, "Adult", "Adult");
+		  }
 		}
 		else
 		{
@@ -307,9 +329,19 @@ function enable_disable_submit()
 window.onload = function() {
    // document.getElementsByName('form[performance_category]')[0].checked=true;
 	//displayField();
-	num_part_changed();
-	music_required_function();
-	enable_disable_submit();
+  if (document.getElementById('first_load').value == '1')
+  {
+    document.getElementById('first_load').value ='0';
+    //Disable all grade groups until a category is selected
+    document.getElementsByName('form[grade_group]')[0].disabled = true;
+    document.getElementsByName('form[grade_group]')[1].disabled = true;
+    document.getElementsByName('form[grade_group]')[2].disabled = true;
+    document.getElementsByName('form[grade_group]')[3].disabled = true;
+    document.getElementById("item_type").disabled = true;
+    music_required_function();
+  }
+  num_part_changed();
+	//enable_disable_submit();
 };
 </script>
 
