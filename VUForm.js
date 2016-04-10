@@ -326,6 +326,106 @@ function enable_disable_submit()
 		document.getElementById('submit').disabled = true;	
 	}
 }
+
+function refreshDropDowns()
+{
+  //Load the correct item types
+    loadItemTypesDropdown();
+    //Select the correct item type
+    
+}
+
+function selectTheItemType(itemType)
+{
+  console.log(itemType);
+}
+
+function loadItemTypesDropdown()
+{
+    var item_box = document.getElementById("item_type");
+    var current_item_text = document.getElementById("item_type_for_output");   
+    //Get the performance type and fill out the appropriate values
+    if (document.getElementsByName('form[performance_category]')[0].checked) 
+    { //if music is checked
+      if (document.getElementsByName('form[grade_group]')[0].checked)
+      {
+        //music for sub juniors
+        addOption(item_box, "Carnatic Vocal Group", "CVG");
+        addOption(item_box, "Hindustani Vocal Group", "HVG");
+        addOption(item_box, "Non-Classical (Light) Vocal Group", "LVG");
+        //select the correct item as well
+      }
+      //juniors and seniors music
+      else if ((document.getElementsByName('form[grade_group]')[1].checked) ||
+      (document.getElementsByName('form[grade_group]')[2].checked) )
+      {
+        //music for juniors and   seniors
+        addOption(item_box, "Carnatic Vocal Solo", "CVS");
+        addOption(item_box, "Carnatic Vocal Group", "CVG");
+        addOption(item_box, "Carnatic Instrumental Solo", "CIS");        
+        addOption(item_box, "Hindustani Vocal Solo", "HVS");
+        addOption(item_box, "Hindustani Vocal Group", "HVG"); 
+        addOption(item_box, "Non-Classical (Light) Vocal Solo", "LVS");       
+        addOption(item_box, "Non-Classical (Light) Vocal Group", "LVG");
+        addOption(item_box, "Non-Classical (Light) Instrumental Solo", "LIS");          
+      }  
+      else if (document.getElementsByName('form[grade_group]')[3].checked)
+        //Adult music performer
+      {
+        addOption(item_box, "Non-Classical (Light) Vocal Solo", "LVS"); 
+      }
+    }  // end music - begin dance selections
+    else if (document.getElementsByName('form[performance_category]')[1].checked) 
+    {
+     if (document.getElementsByName('form[grade_group]')[0].checked)
+      {
+        //dance for sub juniors
+        addOption(item_box, "Bharathanatyam Group", "BG");
+        addOption(item_box, "Classical (Other) Group ", "CG");         
+        addOption(item_box, "Folk/Film (Non-Classical) Group", "FG");
+      }
+      //juniors and seniors music
+      else if ((document.getElementsByName('form[grade_group]')[1].checked) ||
+      (document.getElementsByName('form[grade_group]')[2].checked))
+      {
+        //dance for juniors and   seniors
+        addOption(item_box, "Bharathanatyam Solo", "BS");
+        addOption(item_box, "Bharathanatyam Group", "BG");
+        addOption(item_box, "Classical (other) Solo", "CS");
+        addOption(item_box, "Classical (Other) Group ", "CG"); 
+        addOption(item_box, "Folk/Film (Non-Classical) Solo", "FS");       
+        addOption(item_box, "Folk/Film (Non-Classical) Group", "FG");
+      }  
+      else if (document.getElementsByName('form[grade_group]')[3].checked)
+        //Adult dance performer
+      {
+        addOption(item_box, "Folk/Film (Non-Classical) Solo", "FS");       
+        addOption(item_box, "Folk/Film (Non-Classical) Group", "FG");
+      }      
+    }
+    else if (document.getElementsByName('form[performance_category]')[2].checked)
+    {
+      //For art option select artwork
+      addOption(item_box, "Individual artwork", "A");
+      //item_box.selectedIndex = 1; 
+    }
+    
+    //Now select the current index
+    if (current_item_text != "")
+    {
+      var length = item_box.length;
+      for (i=0; i < length; i++)
+      {
+        var optionText = item_box.options[i].text;
+        if (item_box.options[i].text == current_item_text)
+        {
+          item_box.selectedIndex = i;
+          break;
+        }
+      }
+    }
+}
+
 window.onload = function() {
    // document.getElementsByName('form[performance_category]')[0].checked=true;
 	//displayField();
@@ -339,8 +439,15 @@ window.onload = function() {
     document.getElementsByName('form[grade_group]')[3].disabled = true;
     document.getElementById("item_type").disabled = true;
     music_required_function();
+    num_part_changed();
   }
-  num_part_changed();
+  else if (document.getElementById('first_load').value == '0')
+  {
+    //We're reloading the form. So, refresh the dropdowns
+    refreshDropDowns();
+    num_part_changed();   
+  }
+
 	//enable_disable_submit();
 };
 </script>
